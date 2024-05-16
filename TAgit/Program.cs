@@ -1,22 +1,19 @@
 ﻿#pragma warning disable CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using TAgit;
 
-//  Var a : Arr_Com;
-//  alf: Set Of Char;   { входной алфавит }
-//  inp_str: String;    { входная строка }
-//  Count: Integer;     { количество команд в алгоритме}
-//  F: Boolean;         { признак корректности ввода }
 internal class Program
 {
     static List<char> alf = new List<char>();
     static List<MarkovCommand> commands = new List<MarkovCommand>();
     static string input;
-    const bool DEBUG = true;
 
     private static void InitAlphabet(string alfStr)
     {
@@ -37,14 +34,15 @@ internal class Program
                 commands.Add(new MarkovCommand(commandParts[0], commandParts[1], inputStr.Contains('!')));
 
                 inputStr = sr.ReadLine();
-                if (inputStr.StartsWith("//") || inputStr == "")  inputStr = sr.ReadLine(); 
+                while (inputStr.StartsWith("//") || inputStr == "") 
+                    inputStr = sr.ReadLine(); 
             }
             input = inputStr;
         }
     }
 
-    static string Solve() {
-        string result = input;
+    static string Solve(string str, bool DEBUG) {
+        string result = str;
         MarkovCommand executingCommand = commands[0];
         int i = 0;
         bool stop = false;
@@ -77,12 +75,25 @@ internal class Program
 
         return result;
     }
+
+    static string Solve(string str) => Solve(str, false);
     private static void Main(string[] args)
     {
+        const bool debug = false;
         Init("task2c.txt");
-        Console.WriteLine(input);
-        string result = Solve();
-        Console.WriteLine(result);
+        while(true)
+        {
+            Console.WriteLine("Введите исходную строку или пустую, чтобы прочитать из файла");
+            string result;
+            string inStr = Console.ReadLine();
+            if (inStr == "")
+            {
+                result = Solve(input, debug);
+                Console.WriteLine(input);
+            }
+            else result = Solve(inStr, debug);
+            Console.WriteLine("result is: " + result);
+        }
     }
 }
 
